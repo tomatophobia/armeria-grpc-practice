@@ -12,6 +12,7 @@ public final class Main {
         final GrpcService grpcService = GrpcService.builder()
                 .addService(new BlogService())
                 .exceptionMapping(new GrpcExceptionHandler())
+                .useBlockingTaskExecutor(true)
                 .build();
         return Server.builder()
                 .http(port)

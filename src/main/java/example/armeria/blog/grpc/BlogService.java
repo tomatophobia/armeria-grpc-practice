@@ -1,5 +1,6 @@
 package example.armeria.blog.grpc;
 
+import com.google.protobuf.Empty;
 import com.linecorp.armeria.internal.shaded.fastutil.objects.Object2LongMap;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
@@ -80,6 +81,23 @@ public final class BlogService extends BlogServiceGrpc.BlogServiceImplBase {
                     .build();
             blogPosts.put(request.getId(), newBlogPost);
             responseObserver.onNext(newBlogPost);
+            responseObserver.onCompleted();
+        }
+    }
+
+    @Override
+    public void deleteBlogPost(DeleteBlogPostRequest request, StreamObserver<Empty> responseObserver) {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        final BlogPost removed = blogPosts.remove(request.getId());
+        if (removed == null) {
+            responseObserver.onError(new BlogNotFoundException("The blog post does not exist. ID: " + request.getId()));
+        } else {
+            responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();
         }
     }

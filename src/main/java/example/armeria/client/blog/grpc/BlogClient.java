@@ -3,6 +3,7 @@ package example.armeria.client.blog.grpc;
 import com.linecorp.armeria.client.grpc.GrpcClients;
 import com.linecorp.armeria.client.logging.LoggingClient;
 import example.armeria.blog.grpc.*;
+import io.grpc.StatusRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +40,22 @@ public final class BlogClient {
         final BlogPost updated = client.updateBlogPost(request);
     }
 
+    static void deleteBlogPost(int id) {
+        final DeleteBlogPostRequest request = DeleteBlogPostRequest.newBuilder().setId(id).build();
+        try {
+            client.deleteBlogPost(request);
+        } catch (StatusRuntimeException statusRuntimeException) {
+
+        }
+    }
+
     void testRun(){
         createBlogPost("Another blog post", "Creating a post via createBlogPost().");
-//        listBlogPosts();
-        getBlogPost(1);
-        updateBlogPost(10000, "New title", "New content.");
-        getBlogPost(1);
+        deleteBlogPost(0);
+        listBlogPosts();
+//        getBlogPost(1);
+//        updateBlogPost(10000, "New title", "New content.");
+//        getBlogPost(1);
     }
 
     public static void main(String[] args) throws Exception {
