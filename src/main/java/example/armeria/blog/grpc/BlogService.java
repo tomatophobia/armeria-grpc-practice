@@ -66,4 +66,21 @@ public final class BlogService extends BlogServiceGrpc.BlogServiceImplBase {
         responseObserver.onNext(ListBlogPostsResponse.newBuilder().addAllBlogs(blogPosts).build());
         responseObserver.onCompleted();
     }
+
+    @Override
+    public void updateBlogPost(UpdateBlogPostRequest request, StreamObserver<BlogPost> responseObserver) {
+        final BlogPost oldBlogPost = blogPosts.get(request.getId());
+        if (oldBlogPost == null) {
+            throw new BlogNotFoundException("The blog post does not exist. ID: " + request.getId());
+        } else {
+            final BlogPost newBlogPost = oldBlogPost.toBuilder()
+                    .setTitle(request.getTitle())
+                    .setContent(request.getContent())
+                    .setModifiedAt(Instant.now().toEpochMilli())
+                    .build();
+            blogPosts.put(request.getId(), newBlogPost);
+            responseObserver.onNext(newBlogPost);
+            responseObserver.onCompleted();
+        }
+    }
 }

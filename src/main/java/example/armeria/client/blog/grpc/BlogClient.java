@@ -30,10 +30,21 @@ public final class BlogClient {
         final List<BlogPost> blogs = response.getBlogsList();
     }
 
+    static void updateBlogPost(Integer id, String newTitle, String newContent) {
+        final UpdateBlogPostRequest request = UpdateBlogPostRequest.newBuilder()
+                .setId(id)
+                .setTitle(newTitle)
+                .setContent(newContent)
+                .build();
+        final BlogPost updated = client.updateBlogPost(request);
+    }
+
     void testRun(){
         createBlogPost("Another blog post", "Creating a post via createBlogPost().");
 //        listBlogPosts();
-        getBlogPost(100);
+        getBlogPost(1);
+        updateBlogPost(10000, "New title", "New content.");
+        getBlogPost(1);
     }
 
     public static void main(String[] args) throws Exception {

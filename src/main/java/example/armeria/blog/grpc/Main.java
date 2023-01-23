@@ -11,6 +11,7 @@ public final class Main {
     static Server newServer(int port) throws Exception {
         final GrpcService grpcService = GrpcService.builder()
                 .addService(new BlogService())
+                .exceptionMapping(new GrpcExceptionHandler())
                 .build();
         return Server.builder()
                 .http(port)
