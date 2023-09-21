@@ -1,2 +1,3 @@
 # armeria-grpc-practice
-- [학습 내용 정리](https://github.com/tomatophobia/armeria-grpc-practice/wiki/I-Learned)
+- Armeria 공식 문서의 gRPC 블로그 예제
+- https://grpc.io/docs/languages/java/basics/ 예제 변형한 에코 예제
