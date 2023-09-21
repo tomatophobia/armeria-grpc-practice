@@ -1,12 +1,13 @@
-package example.armeria.blog.grpc;
+package example.armeria.blog;
 
 import com.linecorp.armeria.common.RequestContext;
 import com.linecorp.armeria.common.annotation.Nullable;
 import com.linecorp.armeria.common.grpc.GrpcStatusFunction;
+
 import io.grpc.Metadata;
 import io.grpc.Status;
 
-public class GrpcExceptionHandler implements GrpcStatusFunction {
+class GrpcExceptionHandler implements GrpcStatusFunction {
     @Nullable
     @Override
     public Status apply(RequestContext ctx, Throwable cause, Metadata metadata) {

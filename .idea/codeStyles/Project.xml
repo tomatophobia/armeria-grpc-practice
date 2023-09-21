@@ -9,6 +9,7 @@
     </JetCodeStyleSettings>
     <ScalaCodeStyleSettings>
       <option name="FORMATTER" value="1" />
+      <option name="MULTILINE_STRING_CLOSING_QUOTES_ON_NEW_LINE" value="true" />
     </ScalaCodeStyleSettings>
     <SqlCodeStyleSettings version="6">
       <option name="SCRIPT_STMT_SEMICOLON_WRAP" value="1" />

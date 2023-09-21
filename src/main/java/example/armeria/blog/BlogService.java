@@ -1,10 +1,4 @@
-package example.armeria.blog.grpc;
-
-import com.google.protobuf.Empty;
-import io.grpc.Status;
-import io.grpc.stub.StreamObserver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package example.armeria.blog;
 
 import java.time.Instant;
 import java.util.Collection;
@@ -16,7 +10,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-public final class BlogService extends BlogServiceGrpc.BlogServiceImplBase {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.protobuf.Empty;
+
+import io.grpc.Status;
+import io.grpc.stub.StreamObserver;
+
+final class BlogService extends BlogServiceGrpc.BlogServiceImplBase {
     private static final Logger logger = LoggerFactory.getLogger(BlogService.class);
     private final AtomicInteger idGenerator = new AtomicInteger();
     private final Map<Integer, BlogPost> blogPosts = new ConcurrentHashMap<>();
@@ -26,12 +28,12 @@ public final class BlogService extends BlogServiceGrpc.BlogServiceImplBase {
         final int id = idGenerator.getAndIncrement();
         final Instant now = Instant.now();
         final BlogPost updated = BlogPost.newBuilder()
-                .setId(id)
-                .setTitle(request.getTitle())
-                .setContent(request.getContent())
-                .setModifiedAt(now.toEpochMilli())
-                .setCreatedAt(now.toEpochMilli())
-                .build();
+                                         .setId(id)
+                                         .setTitle(request.getTitle())
+                                         .setContent(request.getContent())
+                                         .setModifiedAt(now.toEpochMilli())
+                                         .setCreatedAt(now.toEpochMilli())
+                                         .build();
         blogPosts.put(id, updated);
         logger.info("Created at {} - {}", updated.getId(), updated.getTitle());
         responseObserver.onNext(updated);
@@ -44,7 +46,7 @@ public final class BlogService extends BlogServiceGrpc.BlogServiceImplBase {
         if (blogPost == null) {
             responseObserver.onError(
                     Status.NOT_FOUND.withDescription("The blog post does not exist. ID: " + request.getId())
-                            .asRuntimeException()
+                                    .asRuntimeException()
             );
         } else {
             responseObserver.onNext(blogPost);
@@ -53,13 +55,14 @@ public final class BlogService extends BlogServiceGrpc.BlogServiceImplBase {
     }
 
     @Override
-    public void listBlogPosts(ListBlogPostsRequest request, StreamObserver<ListBlogPostsResponse> responseObserver) {
+    public void listBlogPosts(ListBlogPostsRequest request,
+                              StreamObserver<ListBlogPostsResponse> responseObserver) {
         final Collection<BlogPost> blogPosts;
         if (request.getDescending()) {
             blogPosts = this.blogPosts.entrySet()
-                    .stream()
-                    .sorted(Collections.reverseOrder(Comparator.comparingInt(Entry::getKey)))
-                    .map(Entry::getValue).collect(Collectors.toList());
+                                      .stream()
+                                      .sorted(Collections.reverseOrder(Comparator.comparingInt(Entry::getKey)))
+                                      .map(Entry::getValue).collect(Collectors.toList());
         } else {
             blogPosts = this.blogPosts.values();
         }
@@ -74,10 +77,10 @@ public final class BlogService extends BlogServiceGrpc.BlogServiceImplBase {
             throw new BlogNotFoundException("The blog post does not exist. ID: " + request.getId());
         } else {
             final BlogPost newBlogPost = oldBlogPost.toBuilder()
-                    .setTitle(request.getTitle())
-                    .setContent(request.getContent())
-                    .setModifiedAt(Instant.now().toEpochMilli())
-                    .build();
+                                                    .setTitle(request.getTitle())
+                                                    .setContent(request.getContent())
+                                                    .setModifiedAt(Instant.now().toEpochMilli())
+                                                    .build();
             blogPosts.put(request.getId(), newBlogPost);
             responseObserver.onNext(newBlogPost);
             responseObserver.onCompleted();
@@ -94,7 +97,8 @@ public final class BlogService extends BlogServiceGrpc.BlogServiceImplBase {
 
         final BlogPost removed = blogPosts.remove(request.getId());
         if (removed == null) {
-            responseObserver.onError(new BlogNotFoundException("The blog post does not exist. ID: " + request.getId()));
+            responseObserver.onError(
+                    new BlogNotFoundException("The blog post does not exist. ID: " + request.getId()));
         } else {
             responseObserver.onNext(Empty.getDefaultInstance());
             responseObserver.onCompleted();

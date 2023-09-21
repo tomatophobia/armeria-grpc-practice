@@ -1,23 +1,24 @@
-package example.armeria.client.blog.grpc;
-
-import com.linecorp.armeria.client.grpc.GrpcClients;
-import com.linecorp.armeria.client.logging.LoggingClient;
-import example.armeria.blog.grpc.*;
-import io.grpc.StatusRuntimeException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package example.armeria.blog;
 
 import java.util.List;
 
-public final class BlogClient {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.linecorp.armeria.client.grpc.GrpcClients;
+import com.linecorp.armeria.client.logging.LoggingClient;
+
+import io.grpc.StatusRuntimeException;
+
+final class BlogClient {
     private static final Logger logger = LoggerFactory.getLogger(BlogClient.class);
     static BlogServiceGrpc.BlogServiceBlockingStub client;
 
     void createBlogPost(String title, String content) {
         final CreateBlogPostRequest request = CreateBlogPostRequest.newBuilder()
-                .setTitle(title)
-                .setContent(content)
-                .build();
+                                                                   .setTitle(title)
+                                                                   .setContent(content)
+                                                                   .build();
         final BlogPost response = client.createBlogPost(request);
         logger.info("[Create response] Title: {} Content: {}", response.getTitle(), response.getContent());
     }
@@ -27,16 +28,17 @@ public final class BlogClient {
     }
 
     static void listBlogPosts() {
-        final ListBlogPostsResponse response = client.listBlogPosts(ListBlogPostsRequest.newBuilder().setDescending(false).build());
+        final ListBlogPostsResponse response = client.listBlogPosts(
+                ListBlogPostsRequest.newBuilder().setDescending(false).build());
         final List<BlogPost> blogs = response.getBlogsList();
     }
 
     static void updateBlogPost(Integer id, String newTitle, String newContent) {
         final UpdateBlogPostRequest request = UpdateBlogPostRequest.newBuilder()
-                .setId(id)
-                .setTitle(newTitle)
-                .setContent(newContent)
-                .build();
+                                                                   .setId(id)
+                                                                   .setTitle(newTitle)
+                                                                   .setContent(newContent)
+                                                                   .build();
         final BlogPost updated = client.updateBlogPost(request);
     }
 
@@ -49,27 +51,27 @@ public final class BlogClient {
         }
     }
 
-    void testRun(){
+    void testRun() {
         createBlogPost("Another blog post", "Creating a post via createBlogPost().");
         deleteBlogPost(0);
         listBlogPosts();
-//        getBlogPost(1);
-//        updateBlogPost(10000, "New title", "New content.");
-//        getBlogPost(1);
+        getBlogPost(1);
+        updateBlogPost(10000, "New title", "New content.");
+        getBlogPost(1);
     }
 
     public static void main(String[] args) throws Exception {
 //        client = GrpcClients.newClient("http://127.0.0.1:8080/", BlogServiceGrpc.BlogServiceBlockingStub.class);
         client = GrpcClients.builder("http://127.0.0.1:8080/")
-                .decorator(LoggingClient.newDecorator())
-                .build(BlogServiceGrpc.BlogServiceBlockingStub.class);
-        CreateBlogPostRequest request = CreateBlogPostRequest.newBuilder()
-                .setTitle("My first blog")
-                .setContent("Yay")
-                .build();
-        BlogPost response = client.createBlogPost(request);
+                            .decorator(LoggingClient.newDecorator())
+                            .build(BlogServiceGrpc.BlogServiceBlockingStub.class);
+        final CreateBlogPostRequest request = CreateBlogPostRequest.newBuilder()
+                                                             .setTitle("My first blog")
+                                                             .setContent("Yay")
+                                                             .build();
+        final BlogPost response = client.createBlogPost(request);
 
-        BlogClient blogClient = new BlogClient();
+        final BlogClient blogClient = new BlogClient();
         blogClient.testRun();
     }
 }
