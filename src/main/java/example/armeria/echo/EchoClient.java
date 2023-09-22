@@ -1,5 +1,6 @@
 package example.armeria.echo;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -22,6 +23,7 @@ final class EchoClient {
     private static EchoStub asyncStub;
 
     EchoClient(int port) {
+        // h1c = HTTP/1 cleartext, h2c = HTTP/2 cleartext
         blockingStub = GrpcClients.builder("h1c://127.0.0.1:" + port)
                                   .build(EchoBlockingStub.class);
         asyncStub = GrpcClients.builder("h1c://127.0.0.1:" + port)
@@ -123,7 +125,7 @@ final class EchoClient {
             }
         };
 
-        final StreamObserver<Message> requestObserver = asyncStub.manyToOne(responseObserver);
+        final StreamObserver<Message> requestObserver = asyncStub.manyToMany(responseObserver);
         try {
             for (Message request : requests) {
                 logger.info("many-to-many request: seq={} title={} content={}", request.getSeq(),
@@ -145,9 +147,14 @@ final class EchoClient {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        final int port = 8980;
+        final int port = 8080;
 
         final EchoClient client = new EchoClient(port);
+        List<Message> messages = new ArrayList<>();
+        for (int i = 1; i < 4; i++) {
+            messages.add(Message.newBuilder().setSeq(i).setTitle("title" + i).setContent("content" + i).build());
+        }
+        client.ManyToMany(messages);
     }
 
 }

@@ -25,7 +25,7 @@ final class EchoServer {
     }
 
     public static void main(String[] args) throws Exception {
-        final Server server = newServer(8980);
+        final Server server = newServer(8080);
 
         server.closeOnJvmShutdown().thenRun(() -> logger.info("Server has been stopped."));
 

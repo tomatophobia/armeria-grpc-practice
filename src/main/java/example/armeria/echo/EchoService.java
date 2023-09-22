@@ -24,7 +24,8 @@ final class EchoService extends EchoGrpc.EchoImplBase {
 
     @Override
     public void oneToMany(Message request, StreamObserver<Message> responseObserver) {
-        for (int i = 0; i < 3; i++) {
+        final int repeated = 3;
+        for (int i = 0; i < repeated; i++) {
             responseObserver.onNext(request);
         }
         responseObserver.onCompleted();
